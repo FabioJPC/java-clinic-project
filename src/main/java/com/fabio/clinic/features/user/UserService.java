@@ -1,5 +1,6 @@
 package com.fabio.clinic.features.user;
 
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,17 @@ public class UserService {
     public List<User> findAll(){
         return repository.findAll();
     }
+
+    @Transactional
     public User create(UserRequestDTO data){
-        User newUser = new User(data);
+        long UserCount = repository.count();
+        UserRole role = (UserCount == 0) ? UserRole.ADMIN : UserRole.STAFF;
         String encPassword = passwordEncoder.encode(data.password());
-        newUser.setPassword(encPassword);
+        User newUser = new User(data.name(), encPassword, role);
         return repository.save(newUser);
+    }
+    public User findByName(String name){
+        return repository.findByName(name).orElseThrow(()-> new RuntimeException("Usuário não encontrado com o nome: ." + name));
     }
 
 }

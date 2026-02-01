@@ -19,6 +19,6 @@ public class Doctor {
     private Long id;
 
     private String name;
-    private String cro;
+    private String registration;
     private String speciality;
 }

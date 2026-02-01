@@ -5,5 +5,6 @@ import jakarta.validation.constraints.Size;
 
 public record UserRequestDTO(
         @NotBlank String name,
-        @NotBlank @Size(min = 8) String password
+        @NotBlank @Size(min = 8) String password,
+        UserRole role
 ) {}
