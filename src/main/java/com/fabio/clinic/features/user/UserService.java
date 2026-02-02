@@ -10,6 +10,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.repository = userRepository;
         this.passwordEncoder = passwordEncoder;

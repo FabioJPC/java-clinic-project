@@ -21,4 +21,10 @@ public class Doctor {
     private String name;
     private String registration;
     private String speciality;
+
+    public Doctor (DoctorRequestDTO data){
+        this.registration = data.registration();
+        this.name = data.name();
+        this.speciality = data.speciality();
+    }
 }

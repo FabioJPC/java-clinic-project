@@ -17,9 +17,16 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Column(unique = true, nullable = false)
     private String email;
+
+    private String name;
     private String phone;
 
+    public Patient(PatientRequestDTO data){
+        this.email = data.email();
+        this.name = data.name();
+        this.phone = data.phone();
+    }
 }
 

@@ -1,6 +1,7 @@
 package com.fabio.clinic.features.appointment;
 import com.fabio.clinic.features.doctor.Doctor;
 import com.fabio.clinic.features.patient.Patient;
+import com.fabio.clinic.features.procedure.Procedure;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,8 +30,18 @@ public class Appointment{
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
+    @ManyToOne
+    @JoinColumn(name = "procedure_id")
+    private Procedure procedure;
+
     @Column(nullable = false)
     private LocalDateTime dateTime;
+
+    private LocalDateTime endDateTime;
+
+    @Enumerated
+    private AppointmentStatus status;
+
 
 
 

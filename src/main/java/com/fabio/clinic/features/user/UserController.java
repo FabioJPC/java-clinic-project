@@ -40,10 +40,6 @@ public class UserController {
         }
     }
 
-
-
-
-
     @GetMapping
     public List<UserResponseDTO> findAll(){
 

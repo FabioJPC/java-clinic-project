@@ -1,11 +1,13 @@
 package com.fabio.clinic.features.doctor;
 
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping("/doctors")
 public class DoctorController {
     private final DoctorService service;
@@ -14,8 +16,14 @@ public class DoctorController {
         this.service = doctorService;
     }
 
-    @GetMapping
-    public Doctor create(@Valid DoctorRequestDTO request){
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Doctor create(@Valid @RequestBody DoctorRequestDTO request){
+        return service.create(request);
+    }
 
+    @GetMapping
+    ResponseEntity<List<Doctor>> findAll(){
+        return ResponseEntity.ok(service.findAll());
     }
 }
