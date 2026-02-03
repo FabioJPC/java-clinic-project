@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -41,9 +43,5 @@ public class Appointment{
 
     @Enumerated
     private AppointmentStatus status;
-
-
-
-
 
 }

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class AppointmentService {
@@ -71,21 +73,26 @@ public class AppointmentService {
         return new AppointmentResponseDTO(response);
     }
 
-    public List<Appointment> findAll(){
-        return appointmentRepository.findAll();
+    public List<AppointmentResponseDTO> findAll(){
+
+        return appointmentRepository.findAll()
+                .stream()
+                .map(AppointmentResponseDTO::new)
+                .toList();
     }
 
     public void validateClinicSchedule(LocalDateTime appointmentStart){
         DayOfWeek dayOfWeek = appointmentStart.getDayOfWeek();
+        String dayPt = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.of("pt", "br"));
         LocalTime localTime = appointmentStart.toLocalTime();
 
         ClinicConfig config = clinicConfigRepository.findByDayOfWeek(dayOfWeek).
-                orElseThrow(()->new RuntimeException("Configuração não encotrada"));
+                orElseThrow(()->new RuntimeException("Configuração não encontrada"));
 
 
         //validate if clinic is open
         if(!config.getIsOpen()){
-            throw new RuntimeException("A clínica não abre aos " + dayOfWeek);
+            throw new RuntimeException("A clínica não abre aos " + dayPt);
         }
 
         //validate if appointment is between working hours
@@ -100,4 +107,5 @@ public class AppointmentService {
             }
         }
     }
+
 }

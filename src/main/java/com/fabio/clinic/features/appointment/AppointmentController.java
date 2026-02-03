@@ -23,7 +23,7 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Appointment>> listAll(){
+    public ResponseEntity<List<AppointmentResponseDTO>> listAll(){
         return ResponseEntity.ok(appointmentService.findAll());
     }
 }

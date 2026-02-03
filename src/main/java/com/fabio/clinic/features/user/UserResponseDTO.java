@@ -8,4 +8,6 @@ public record UserResponseDTO(
     public UserResponseDTO(User user){
         this(user.getId(),user.getName(), user.getRole());
     }
+
+
 }
