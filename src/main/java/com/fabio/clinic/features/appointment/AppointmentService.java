@@ -1,12 +1,16 @@
 package com.fabio.clinic.features.appointment;
 
+import com.fabio.clinic.features.clinicConfig.ClinicConfig;
+import com.fabio.clinic.features.clinicConfig.ClinicConfigRepository;
 import com.fabio.clinic.features.doctor.DoctorRepository;
 import com.fabio.clinic.features.patient.PatientRepository;
 import com.fabio.clinic.features.procedure.ProcedureRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -16,17 +20,20 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
     private final ProcedureRepository procedureRepository;
+    private final ClinicConfigRepository clinicConfigRepository;
 
     public AppointmentService(
             AppointmentRepository appointmentRepository,
             PatientRepository patientRepository,
             DoctorRepository doctorRepository,
-            ProcedureRepository procedureRepository)
+            ProcedureRepository procedureRepository,
+            ClinicConfigRepository clinicConfigRepository)
     {
         this.appointmentRepository = appointmentRepository;
         this.doctorRepository = doctorRepository;
         this.patientRepository = patientRepository;
         this.procedureRepository = procedureRepository;
+        this.clinicConfigRepository = clinicConfigRepository;
 
     }
 
@@ -42,6 +49,11 @@ public class AppointmentService {
 
         LocalDateTime start = data.dateTime();
         LocalDateTime end = start.plusMinutes(procedure.getDurationInMinutes());
+
+        //validate if the appointment is within operational dates and time.
+        validateClinicSchedule(start);
+
+        //check date and time concurrency
         boolean hasOverlap = appointmentRepository.existsOverlapping(data.doctor_id(), start, end);
 
         if(hasOverlap){
@@ -63,4 +75,29 @@ public class AppointmentService {
         return appointmentRepository.findAll();
     }
 
+    public void validateClinicSchedule(LocalDateTime appointmentStart){
+        DayOfWeek dayOfWeek = appointmentStart.getDayOfWeek();
+        LocalTime localTime = appointmentStart.toLocalTime();
+
+        ClinicConfig config = clinicConfigRepository.findByDayOfWeek(dayOfWeek).
+                orElseThrow(()->new RuntimeException("Configuração não encotrada"));
+
+
+        //validate if clinic is open
+        if(!config.getIsOpen()){
+            throw new RuntimeException("A clínica não abre aos " + dayOfWeek);
+        }
+
+        //validate if appointment is between working hours
+        if (localTime.isBefore(config.getOpenTime()) || localTime.isAfter(config.getCloseTime())) {
+            throw new RuntimeException("Horário fora do expediente da clínica.");
+        }
+
+        //validate if is not lunchtime
+        if(config.getBreakStart() != null && config.getBreakEnd() != null){
+            if (localTime.isAfter(config.getBreakStart()) && localTime.isBefore(config.getBreakEnd())) {
+                throw new RuntimeException("A clínica está em horário de intervalo.");
+            }
+        }
+    }
 }
