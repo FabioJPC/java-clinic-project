@@ -3,6 +3,8 @@ package com.fabio.clinic.features.patient;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PatientService {
     private final PatientRepository repository;
@@ -13,7 +15,12 @@ public class PatientService {
         this.mapper = patientMapper;
     }
 
-
+    public List<PatientResponseDTO> findAll(){
+        return repository.findAll()
+                .stream()
+                .map(PatientResponseDTO::new)
+                .toList();
+    }
 
     @Transactional
     public PatientResponseDTO create(PatientRequestDTO data){
