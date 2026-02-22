@@ -1,20 +1,19 @@
 package com.fabio.clinic.features.patient;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 
 @RequestMapping("/patients")
+@CrossOrigin(origins = "*")
 public class PatientController {
     private final PatientService service;
     public PatientController(PatientService patientService){this.service = patientService;}
 
     @PostMapping
-    public Patient create(@Valid @RequestBody PatientRequestDTO requestDTO){
-        return service.create(requestDTO);
+    public ResponseEntity<PatientResponseDTO> create(@Valid @RequestBody PatientRequestDTO requestDTO){
+        return ResponseEntity.ok(service.create(requestDTO));
     }
 }
